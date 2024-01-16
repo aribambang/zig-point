@@ -1,4 +1,7 @@
 const std = @import("std");
+const expect = std.testing.expect;
+const print = std.debug.print;
+const pow = std.math.pow;
 
 // You can return a struct from a function. This is how we do generics in Zig
 pub fn Point(comptime T: type) type {
@@ -29,7 +32,7 @@ pub fn Point(comptime T: type) type {
         }
 
         pub fn printPoint(self: Self) void {
-            std.debug.print("({},{})\n", .{ getX(self), getY(self) });
+            print("({},{})\n", .{ getX(self), getY(self) });
         }
 
         pub fn plusPoint(p1: Self, p2: Self) Self {
@@ -65,6 +68,10 @@ pub fn Point(comptime T: type) type {
             return makePoint(@divExact((getX(p1) + getX(p2)), 2), @divExact((getY(p1) + getY(p2)), 2));
         }
 
+        pub fn distanceFromZero(p: Self) f32 {
+            return @sqrt(@as(f32, @floatFromInt(pow(T, getX(p), 2) + pow(T, getY(p), 2))));
+        }
+
         pub fn setX(self: *Self, newX: T) void {
             self.X = newX;
         }
@@ -87,16 +94,16 @@ test "init" {
     const T: type = i32;
     const p = Point(T).init();
 
-    try std.testing.expect(p.X == 0);
-    try std.testing.expect(p.Y == 0);
+    try expect(p.X == 0);
+    try expect(p.Y == 0);
 }
 
 test "makePoint" {
     const T: type = i32;
     const p = Point(T).makePoint(1, 2);
 
-    try std.testing.expect(p.X == 1);
-    try std.testing.expect(p.Y == 2);
+    try expect(p.X == 1);
+    try expect(p.Y == 2);
 }
 
 test "pointEqual" {
@@ -104,7 +111,7 @@ test "pointEqual" {
     const p1 = Point(T).makePoint(1, 2);
     const p2 = Point(T).makePoint(1, 2);
 
-    try std.testing.expect(Point(T).pointEqual(p1, p2) == true);
+    try expect(Point(T).pointEqual(p1, p2) == true);
 }
 
 test "plusPoint" {
@@ -113,15 +120,15 @@ test "plusPoint" {
     const p2 = Point(T).makePoint(1, 2);
     const p3 = Point(T).plusPoint(p1, p2);
 
-    try std.testing.expect(p3.X == 2);
-    try std.testing.expect(p3.Y == 4);
+    try expect(p3.X == 2);
+    try expect(p3.Y == 4);
 }
 
 test "isOrigin" {
     const T: type = i32;
     const p = Point(T).init();
 
-    try std.testing.expect(Point(T).isOrigin(p) == true);
+    try expect(Point(T).isOrigin(p) == true);
 }
 
 test "quadrant" {
@@ -132,11 +139,11 @@ test "quadrant" {
     const p3 = Point(T).makePoint(-1, -1);
     const p4 = Point(T).makePoint(1, -1);
 
-    try std.testing.expect(p.quadrant() == undefined);
-    try std.testing.expect(p1.quadrant() == 1);
-    try std.testing.expect(p2.quadrant() == 2);
-    try std.testing.expect(p3.quadrant() == 3);
-    try std.testing.expect(p4.quadrant() == 4);
+    try expect(p.quadrant() == undefined);
+    try expect(p1.quadrant() == 1);
+    try expect(p2.quadrant() == 2);
+    try expect(p3.quadrant() == 3);
+    try expect(p4.quadrant() == 4);
 }
 
 test "midPoint" {
@@ -145,5 +152,14 @@ test "midPoint" {
     const p2 = Point(T).makePoint(3, 3);
     const target = Point(T).makePoint(2, 2);
 
-    try std.testing.expect(Point(T).pointEqual(Point(T).midPoint(p1, p2), target));
+    try expect(Point(T).pointEqual(Point(T).midPoint(p1, p2), target));
+}
+
+test "distanceFromZero" {
+    const T: type = i32;
+    const p = Point(T).init();
+    const p1 = Point(T).makePoint(1, 2);
+
+    try expect(p.distanceFromZero() == 0);
+    try expect(p1.distanceFromZero() == 2.2360679775);
 }
