@@ -1,1 +1,1 @@
-# zig-init
+# zig-point
