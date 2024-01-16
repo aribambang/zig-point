@@ -61,6 +61,10 @@ pub fn Point(comptime T: type) type {
             }
         }
 
+        pub fn midPoint(p1: Self, p2: Self) Self {
+            return makePoint(@divExact((getX(p1) + getX(p2)), 2), @divExact((getY(p1) + getY(p2)), 2));
+        }
+
         pub fn setX(self: *Self, newX: T) void {
             self.X = newX;
         }
@@ -133,4 +137,13 @@ test "quadrant" {
     try std.testing.expect(p2.quadrant() == 2);
     try std.testing.expect(p3.quadrant() == 3);
     try std.testing.expect(p4.quadrant() == 4);
+}
+
+test "midPoint" {
+    const T: type = i32;
+    const p1 = Point(T).makePoint(1, 1);
+    const p2 = Point(T).makePoint(3, 3);
+    const target = Point(T).makePoint(2, 2);
+
+    try std.testing.expect(Point(T).pointEqual(Point(T).midPoint(p1, p2), target));
 }
