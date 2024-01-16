@@ -11,4 +11,9 @@ pub fn main() !void {
 
     var p3 = Point(T).plusPoint(p1, p2);
     p3.printPoint();
+
+    var p4 = Point(T).init();
+    p4.printPoint();
+    p4.move(10, 5);
+    p4.printPoint();
 }

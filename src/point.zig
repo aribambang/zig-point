@@ -76,19 +76,24 @@ pub fn Point(comptime T: type) type {
             return @sqrt(@as(f32, @floatFromInt(pow(T, getX(p1) - getX(p2), 2) + pow(T, getY(p1) - getY(p2), 2))));
         }
 
-        pub fn setX(self: *Self, newX: T) void {
+        pub fn move(self: *Self, deltaX: T, deltaY: T) void {
+            setX(self, getX(self.*) + deltaX);
+            setY(self, getY(self.*) + deltaY);
+        }
+
+        fn setX(self: *Self, newX: T) void {
             self.X = newX;
         }
 
-        pub fn setY(self: *Self, newY: T) void {
+        fn setY(self: *Self, newY: T) void {
             self.Y = newY;
         }
 
-        pub fn getX(self: Self) T {
+        fn getX(self: Self) T {
             return self.X;
         }
 
-        pub fn getY(self: Self) T {
+        fn getY(self: Self) T {
             return self.Y;
         }
     };
@@ -174,4 +179,13 @@ test "distanceTwoPoint" {
     const p1 = Point(T).makePoint(1, 2);
 
     try expect(Point(T).distanceTwoPoint(p, p1) == 2.2360679775);
+}
+
+test "move" {
+    const T: type = i32;
+    var p = Point(T).init();
+
+    p.move(10, 5);
+
+    try expect(Point(T).pointEqual(p, Point(T).makePoint(10, 5)));
 }
