@@ -44,6 +44,23 @@ pub fn Point(comptime T: type) type {
             return (getX(p) == 0 and getY(p) == 0);
         }
 
+        pub fn quadrant(p: Self) i32 {
+            const x = getX(p);
+            const y = getY(p);
+
+            if (x > 0 and y > 0) {
+                return 1;
+            } else if (x < 0 and y > 0) {
+                return 2;
+            } else if (x < 0 and y < 0) {
+                return 3;
+            } else if (x > 0 and y < 0) {
+                return 4;
+            } else {
+                return undefined;
+            }
+        }
+
         pub fn setX(self: *Self, newX: T) void {
             self.X = newX;
         }
@@ -64,7 +81,7 @@ pub fn Point(comptime T: type) type {
 
 test "init" {
     const T: type = i32;
-    var p = Point(T).init();
+    const p = Point(T).init();
 
     try std.testing.expect(p.X == 0);
     try std.testing.expect(p.Y == 0);
@@ -72,7 +89,7 @@ test "init" {
 
 test "makePoint" {
     const T: type = i32;
-    var p = Point(T).makePoint(1, 2);
+    const p = Point(T).makePoint(1, 2);
 
     try std.testing.expect(p.X == 1);
     try std.testing.expect(p.Y == 2);
@@ -80,17 +97,17 @@ test "makePoint" {
 
 test "pointEqual" {
     const T: type = i32;
-    var p1 = Point(T).makePoint(1, 2);
-    var p2 = Point(T).makePoint(1, 2);
+    const p1 = Point(T).makePoint(1, 2);
+    const p2 = Point(T).makePoint(1, 2);
 
     try std.testing.expect(Point(T).pointEqual(p1, p2) == true);
 }
 
 test "plusPoint" {
     const T: type = i32;
-    var p1 = Point(T).makePoint(1, 2);
-    var p2 = Point(T).makePoint(1, 2);
-    var p3 = Point(T).plusPoint(p1, p2);
+    const p1 = Point(T).makePoint(1, 2);
+    const p2 = Point(T).makePoint(1, 2);
+    const p3 = Point(T).plusPoint(p1, p2);
 
     try std.testing.expect(p3.X == 2);
     try std.testing.expect(p3.Y == 4);
@@ -98,7 +115,22 @@ test "plusPoint" {
 
 test "isOrigin" {
     const T: type = i32;
-    var p = Point(T).init();
+    const p = Point(T).init();
 
     try std.testing.expect(Point(T).isOrigin(p) == true);
+}
+
+test "quadrant" {
+    const T: type = i32;
+    const p = Point(T).init();
+    const p1 = Point(T).makePoint(1, 1);
+    const p2 = Point(T).makePoint(-1, 1);
+    const p3 = Point(T).makePoint(-1, -1);
+    const p4 = Point(T).makePoint(1, -1);
+
+    try std.testing.expect(p.quadrant() == undefined);
+    try std.testing.expect(p1.quadrant() == 1);
+    try std.testing.expect(p2.quadrant() == 2);
+    try std.testing.expect(p3.quadrant() == 3);
+    try std.testing.expect(p4.quadrant() == 4);
 }
